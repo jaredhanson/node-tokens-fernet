@@ -7,7 +7,8 @@
     "email": "jaredhanson@gmail.com",
     "url": "http://www.jaredhanson.net/"
   },
-  "repository": {    "type": "git",
+  "repository": {
+    "type": "git",
     "url": "git://github.com/jaredhanson/node-tokens-fernet.git"
   },
   "bugs": {
@@ -28,5 +29,8 @@
   },
   "scripts": {
     "test": "node_modules/.bin/mocha test/*.test.js"
+  },
+  "dependencies": {
+    "fernet": "^0.3.0"
   }
 }
