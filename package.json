@@ -22,15 +22,16 @@
     }
   ],
   "main": "./lib",
+  "dependencies": {
+    "fernet": "^0.3.0"
+  },
   "devDependencies": {
     "make-node": "^0.3.0",
     "mocha": "^2.0.0",
-    "chai": "^3.0.0"
+    "chai": "^3.0.0",
+    "sinon": "^2.0.0"
   },
   "scripts": {
     "test": "node_modules/.bin/mocha test/*.test.js"
-  },
-  "dependencies": {
-    "fernet": "^0.3.0"
   }
 }
