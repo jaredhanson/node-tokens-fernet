@@ -117,8 +117,8 @@ describe('seal', function() {
           expect(claims.foo).to.equal('bar');
         });
       });
-    }); // encrypting arbitrary claims
+    }); // encrypting arbitrary claims to audience
     
-  });
+  }); // using defaults
   
 });
