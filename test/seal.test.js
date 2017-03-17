@@ -42,8 +42,8 @@ describe('seal', function() {
         expect(call.args[0]).to.deep.equal({
           recipients: undefined,
           usage: 'encrypt',
-          algorithms: [ 'aes256-cbc' ],
-          length: 32
+          algorithms: [ 'aes128-cbc-hmac-sha256' ],
+          length: 256
         });
       });
       
@@ -92,8 +92,8 @@ describe('seal', function() {
             secret: 'API-12abcdef7890abcdef7890abcdef'
           } ],
           usage: 'encrypt',
-          algorithms: [ 'aes256-cbc' ],
-          length: 32
+          algorithms: [ 'aes128-cbc-hmac-sha256' ],
+          length: 256
         });
       });
       
