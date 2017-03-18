@@ -14,9 +14,9 @@ describe('seal', function() {
         if (q.recipients) {
           var recipient = q.recipients[0];
           return cb(null, [ { secret: recipient.secret } ]);
+        } else {
+          return cb(null, [ { id: '1', secret: '12abcdef7890abcdef7890abcdef7890' } ]);
         }
-        
-        return cb(null, [ { id: 'k1', secret: '12abcdef7890abcdef7890abcdef7890' } ]);
       });
       
       seal = setup(keying);
@@ -48,7 +48,7 @@ describe('seal', function() {
       });
       
       it('should generate a token', function() {
-        expect(token.length).to.be.above(0);
+        expect(token.length).to.equal(100);
         expect(token.substr(0, 1)).to.equal('g');
       });
       
@@ -62,7 +62,7 @@ describe('seal', function() {
           claims = JSON.parse(payload);
         });
         
-        it('should be correct', function() {
+        it('should be valid', function() {
           expect(claims).to.be.an('object');
           expect(claims.foo).to.equal('bar');
         });
@@ -98,7 +98,7 @@ describe('seal', function() {
       });
       
       it('should generate a token', function() {
-        expect(token.length).to.be.above(0);
+        expect(token.length).to.equal(100);
         expect(token.substr(0, 1)).to.equal('g');
       });
       
@@ -112,7 +112,7 @@ describe('seal', function() {
           claims = JSON.parse(payload);
         });
         
-        it('should be correct', function() {
+        it('should be valid', function() {
           expect(claims).to.be.an('object');
           expect(claims.foo).to.equal('bar');
         });
