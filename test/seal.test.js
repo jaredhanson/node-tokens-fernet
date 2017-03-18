@@ -52,7 +52,7 @@ describe('seal', function() {
         expect(token.substr(0, 1)).to.equal('g');
       });
       
-      describe('verifying claims', function() {
+      describe('verifying token', function() {
         var claims;
         before(function() {
           var fsecret = new fernet.Secret(Buffer.from('12abcdef7890abcdef7890abcdef7890', 'utf8').toString('base64'));
@@ -102,7 +102,7 @@ describe('seal', function() {
         expect(token.substr(0, 1)).to.equal('g');
       });
       
-      describe('verifying claims', function() {
+      describe('verifying token', function() {
         var claims;
         before(function() {
           var fsecret = new fernet.Secret(Buffer.from('API-12abcdef7890abcdef7890abcdef', 'utf8').toString('base64'));
