@@ -13,9 +13,9 @@ describe('seal', function() {
       keying = sinon.spy(function(q, cb){
         if (!q.recipient) {
           if (q.usage == 'encrypt') {
-            return cb(null, [ { id: '1', secret: 'ef7890abcdef7890', usages: [ 'encrypt' ] } ]);
+            return cb(null, [ { secret: 'ef7890abcdef7890', usages: [ 'encrypt' ] } ]);
           } else {
-            return cb(null, [ { id: '1', secret: '12abcdef7890abcd', usages: [ 'sign' ] } ]);
+            return cb(null, [ { secret: '12abcdef7890abcd', usages: [ 'sign' ] } ]);
           }
         }
 
@@ -53,8 +53,14 @@ describe('seal', function() {
         expect(call.args[0]).to.deep.equal({
           recipient: undefined,
           usage: 'encrypt',
-          algorithms: [ 'aes128-cbc-hmac-sha256' ],
-          length: 256
+          algorithms: [ 'aes128-cbc' ]
+        });
+        
+        call = keying.getCall(1);
+        expect(call.args[0]).to.deep.equal({
+          recipient: undefined,
+          usage: 'sign',
+          algorithms: [ 'hmac-sha256' ]
         });
       });
       
@@ -101,8 +107,16 @@ describe('seal', function() {
             id: 'https://api.example.com/'
           },
           usage: 'encrypt',
-          algorithms: [ 'aes128-cbc-hmac-sha256' ],
-          length: 256
+          algorithms: [ 'aes128-cbc' ]
+        });
+        
+        call = keying.getCall(1);
+        expect(call.args[0]).to.deep.equal({
+          recipient: {
+            id: 'https://api.example.com/'
+          },
+          usage: 'sign',
+          algorithms: [ 'hmac-sha256' ]
         });
       });
       
