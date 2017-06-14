@@ -43,8 +43,13 @@ describe('unseal', function() {
         var call = keying.getCall(0);
         expect(call.args[0]).to.deep.equal({
           usage: 'decrypt',
-          algorithms: [ 'aes128-cbc-hmac-sha256' ],
-          length: 256
+          algorithms: [ 'aes128-cbc' ],
+        });
+        
+        call = keying.getCall(1);
+        expect(call.args[0]).to.deep.equal({
+          usage: 'verify',
+          algorithms: [ 'hmac-sha256' ],
         });
       });
       
