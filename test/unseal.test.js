@@ -14,7 +14,11 @@ describe('unseal', function() {
     describe('unsealing', function() {
       before(function() {
         keying = sinon.spy(function(q, cb){
-          return cb(null, [ { secret: 'API-12abcdef7890abcdef7890abcdef' } ]);
+          if (q.usage == 'decrypt') {
+            return cb(null, [ { secret: 'abcdef7890abcdef', usages: [ 'decrypt' ] } ]);
+          } else {
+            return cb(null, [ { secret: 'API-12abcdef7890', usages: [ 'verify' ] } ]);
+          }
         });
       
         unseal = setup(keying);
@@ -35,7 +39,7 @@ describe('unseal', function() {
       });
       
       it('should query for key', function() {
-        expect(keying.callCount).to.equal(1);
+        expect(keying.callCount).to.equal(2);
         var call = keying.getCall(0);
         expect(call.args[0]).to.deep.equal({
           usage: 'decrypt',
