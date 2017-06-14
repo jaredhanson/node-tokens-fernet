@@ -11,11 +11,13 @@ describe('seal', function() {
     
     before(function() {
       keying = sinon.spy(function(q, cb){
-        if (q.recipient) {
-          var recipient = q.recipient;
-          return cb(null, [ { secret: recipient.secret } ]);
-        } else {
+        if (!q.recipient) {
           return cb(null, [ { id: '1', secret: '12abcdef7890abcdef7890abcdef7890' } ]);
+        }
+        
+        switch (q.recipient.id) {
+        case 'https://api.example.com/':
+          return cb(null, [ { secret: 'API-12abcdef7890abcdef7890abcdef' } ]);
         }
       });
       
@@ -23,7 +25,7 @@ describe('seal', function() {
     });
     
     
-    describe('encrypting arbitrary claims', function() {
+    describe('encrypting to self', function() {
       var token;
       before(function(done) {
         seal({ foo: 'bar' }, function(err, t) {
@@ -67,14 +69,13 @@ describe('seal', function() {
           expect(claims.foo).to.equal('bar');
         });
       });
-    }); // encrypting arbitrary claims
+    }); // encrypting to self
     
-    describe('encrypting arbitrary claims to audience', function() {
+    describe('encrypting to audience', function() {
       var token;
       before(function(done) {
         var audience = [ {
-          id: 'https://api.example.com/',
-          secret: 'API-12abcdef7890abcdef7890abcdef'
+          id: 'https://api.example.com/'
         } ];
         
         seal({ foo: 'bar' }, { audience: audience }, function(err, t) {
@@ -88,8 +89,7 @@ describe('seal', function() {
         var call = keying.getCall(0);
         expect(call.args[0]).to.deep.equal({
           recipient: {
-            id: 'https://api.example.com/',
-            secret: 'API-12abcdef7890abcdef7890abcdef'
+            id: 'https://api.example.com/'
           },
           usage: 'encrypt',
           algorithms: [ 'aes128-cbc-hmac-sha256' ],
@@ -117,7 +117,7 @@ describe('seal', function() {
           expect(claims.foo).to.equal('bar');
         });
       });
-    }); // encrypting arbitrary claims to audience
+    }); // encrypting to audience
     
   }); // using defaults
   
