@@ -28,8 +28,8 @@ describe('seal', function() {
           }
           break;
           
-        case 'https://rs1.example.com/':
-          return cb(null, [ { secret: 'RS1-12abcdef7890', usages: [ 'sign', 'encrypt' ] } ]);
+        case 'https://api.example.net/':
+          return cb(null, [ { secret: 'NET-12abcdef7890', usages: [ 'sign', 'encrypt' ] } ]);
         }
       });
       
@@ -153,7 +153,7 @@ describe('seal', function() {
       var token;
       before(function(done) {
         var audience = [ {
-          id: 'https://rs1.example.com/'
+          id: 'https://api.example.net/'
         } ];
         
         seal({ foo: 'bar' }, { audience: audience }, function(err, t) {
@@ -171,7 +171,7 @@ describe('seal', function() {
         var call = keying.getCall(0);
         expect(call.args[0]).to.deep.equal({
           recipient: {
-            id: 'https://rs1.example.com/'
+            id: 'https://api.example.net/'
           },
           usage: 'encrypt',
           algorithms: [ 'aes128-cbc' ]
@@ -186,7 +186,7 @@ describe('seal', function() {
       describe('verifying token', function() {
         var claims;
         before(function() {
-          var fsecret = new fernet.Secret(Buffer.from('RS1-12abcdef7890RS1-12abcdef7890', 'utf8').toString('base64'));
+          var fsecret = new fernet.Secret(Buffer.from('NET-12abcdef7890NET-12abcdef7890', 'utf8').toString('base64'));
           var ftoken = new fernet.Token({ token: token, secret: fsecret, ttl: 0 });
           var payload = ftoken.decode();
           
