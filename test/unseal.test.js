@@ -15,9 +15,9 @@ describe('unseal', function() {
       before(function() {
         keying = sinon.spy(function(q, cb){
           if (q.usage == 'decrypt') {
-            return cb(null, [ { secret: 'abcdef7890abcdef', usages: [ 'decrypt' ] } ]);
+            return cb(null, [ { secret: 'abcdef7890abcdef' } ]);
           } else {
-            return cb(null, [ { secret: 'API-12abcdef7890', usages: [ 'verify' ] } ]);
+            return cb(null, [ { secret: 'API-12abcdef7890' } ]);
           }
         });
       

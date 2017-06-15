@@ -13,9 +13,9 @@ describe('seal', function() {
       keying = sinon.spy(function(q, cb){
         if (!q.recipient) {
           if (q.usage == 'encrypt') {
-            return cb(null, [ { secret: 'ef7890abcdef7890', usages: [ 'encrypt' ] } ]);
+            return cb(null, [ { secret: 'ef7890abcdef7890' } ]);
           } else {
-            return cb(null, [ { secret: '12abcdef7890abcd', usages: [ 'sign' ] } ]);
+            return cb(null, [ { secret: '12abcdef7890abcd' } ]);
           }
         }
 
@@ -29,9 +29,7 @@ describe('seal', function() {
           break;
           
         case 'https://rs1.example.com/':
-          return cb(null, [ { secret: 'RS1-12abcdef7890' } ]);
-        case 'https://rs2.example.com/':
-          return cb(null, [ { secret: 'RS2-12abcdef7890', usages: [ 'sign', 'encrypt' ] } ]);
+          return cb(null, [ { secret: 'RS1-12abcdef7890', usages: [ 'sign', 'encrypt' ] } ]);
         }
       });
       
@@ -151,7 +149,7 @@ describe('seal', function() {
       });
     }); // encrypting to audience
     
-    describe('encrypting to audience implicitly using single key for encryption and message authentication', function() {
+    describe('encrypting to audience using single key for encryption and message authentication', function() {
       var token;
       before(function(done) {
         var audience = [ {
@@ -200,58 +198,7 @@ describe('seal', function() {
           expect(claims.foo).to.equal('bar');
         });
       });
-    }); // encrypting to audience implicitly using single key for encryption and message authentication
-    
-    describe('encrypting to audience explicitly using single key for encryption and message authentication', function() {
-      var token;
-      before(function(done) {
-        var audience = [ {
-          id: 'https://rs2.example.com/'
-        } ];
-        
-        seal({ foo: 'bar' }, { audience: audience }, function(err, t) {
-          token = t;
-          done(err);
-        });
-      });
-      
-      after(function() {
-        keying.reset();
-      });
-      
-      it('should query for key', function() {
-        expect(keying.callCount).to.equal(1);
-        var call = keying.getCall(0);
-        expect(call.args[0]).to.deep.equal({
-          recipient: {
-            id: 'https://rs2.example.com/'
-          },
-          usage: 'encrypt',
-          algorithms: [ 'aes128-cbc' ]
-        });
-      });
-      
-      it('should generate a token', function() {
-        expect(token.length).to.equal(100);
-        expect(token.substr(0, 1)).to.equal('g');
-      });
-      
-      describe('verifying token', function() {
-        var claims;
-        before(function() {
-          var fsecret = new fernet.Secret(Buffer.from('RS2-12abcdef7890RS2-12abcdef7890', 'utf8').toString('base64'));
-          var ftoken = new fernet.Token({ token: token, secret: fsecret, ttl: 0 });
-          var payload = ftoken.decode();
-          
-          claims = JSON.parse(payload);
-        });
-        
-        it('should be valid', function() {
-          expect(claims).to.be.an('object');
-          expect(claims.foo).to.equal('bar');
-        });
-      });
-    }); // encrypting to audience explicitly using single key for encryption and message authentication
+    }); // encrypting to audience implicitly single key for encryption and message authentication
     
   }); // using defaults
   
