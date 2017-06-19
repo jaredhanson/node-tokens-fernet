@@ -67,6 +67,6 @@ describe('unseal', function() {
       });
     }); // unsealing
     
-  });
+  }); // using defaults
   
-});
+}); // unseal

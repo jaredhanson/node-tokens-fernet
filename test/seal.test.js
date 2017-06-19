@@ -149,7 +149,7 @@ describe('seal', function() {
       });
     }); // encrypting to audience
     
-    describe('encrypting to audience using single key for encryption and message authentication', function() {
+    describe('encrypting to audience using single key for both encryption and message authentication', function() {
       var token;
       before(function(done) {
         var audience = [ {
@@ -198,8 +198,8 @@ describe('seal', function() {
           expect(claims.foo).to.equal('bar');
         });
       });
-    }); // encrypting to audience implicitly single key for encryption and message authentication
+    }); // encrypting to audience implicitly single key for both encryption and message authentication
     
   }); // using defaults
   
-});
+}); // seal
