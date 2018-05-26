@@ -6,36 +6,7 @@ var expect = require('chai').expect;
 
 describe('seal', function() {
   
-  describe('using defaults', function() {
-    var seal, keying;
-
-    before(function() {
-      keying = sinon.spy(function(entity, q, cb){
-        if (!q.recipient) {
-          if (q.usage == 'encrypt') {
-            return cb(null, { secret: 'ef7890abcdef7890' });
-          } else {
-            return cb(null, { secret: '12abcdef7890abcd' });
-          }
-        }
-
-        switch (q.recipient.id) {
-        case 'https://api.example.com/':
-          if (q.usage == 'encrypt') {
-            return cb(null, { secret: 'abcdef7890abcdef', usages: [ 'encrypt' ] });
-          } else {
-            return cb(null, { secret: 'API-12abcdef7890', usages: [ 'sign' ] });
-          }
-          break;
-          
-        case 'https://api.example.net/':
-          return cb(null, { secret: 'NET-12abcdef7890', usages: [ 'sign', 'encrypt' ] });
-        }
-      });
-      
-      seal = setup(keying);
-    });
-    
+  describe('defaults', function() {
     
     describe('encrypting to self', function() {
       var token;
@@ -97,21 +68,27 @@ describe('seal', function() {
       });
     }); // encrypting to self
     
-    describe('encrypting to audience', function() {
+    describe('encrypting to recipient', function() {
       var token;
+      
+      var keying = sinon.spy(function(entity, q, cb){
+        if (q.usage == 'encrypt') {
+          return cb(null, { secret: 'abcdef7890abcdef', usages: [ 'encrypt' ] });
+        } else {
+          return cb(null, { secret: 'API-12abcdef7890', usages: [ 'sign' ] });
+        }
+      });
+      
       before(function(done) {
         var audience = [ {
           id: 'https://api.example.com/'
         } ];
         
+        var seal = setup(keying);
         seal({ foo: 'bar' }, audience, function(err, t) {
           token = t;
           done(err);
         });
-      });
-      
-      after(function() {
-        keying.reset();
       });
       
       it('should query for key', function() {
@@ -155,23 +132,25 @@ describe('seal', function() {
           expect(claims.foo).to.equal('bar');
         });
       });
-    }); // encrypting to audience
+    }); // encrypting to recipient
     
     describe('encrypting to audience using single key for both encryption and message authentication', function() {
       var token;
+      
+      var keying = sinon.spy(function(entity, q, cb){
+        return cb(null, { secret: 'NET-12abcdef7890', usages: [ 'sign', 'encrypt' ] });
+      });
+      
       before(function(done) {
         var audience = [ {
           id: 'https://api.example.net/'
         } ];
         
+        var seal = setup(keying);
         seal({ foo: 'bar' }, audience, function(err, t) {
           token = t;
           done(err);
         });
-      });
-      
-      after(function() {
-        keying.reset();
       });
       
       it('should query for key', function() {
@@ -208,6 +187,6 @@ describe('seal', function() {
       });
     }); // encrypting to audience implicitly single key for both encryption and message authentication
     
-  }); // using defaults
+  }); // defaults
   
 }); // seal
