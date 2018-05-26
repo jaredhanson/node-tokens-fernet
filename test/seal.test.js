@@ -32,7 +32,6 @@ describe('seal', function() {
         var call = keying.getCall(0);
         expect(call.args[0]).to.deep.equal({ identifier: 'https://self-issued.me' });
         expect(call.args[1]).to.deep.equal({
-          recipient: { identifier: 'https://self-issued.me' },
           usage: 'encrypt',
           algorithms: [ 'aes128-cbc' ]
         });
@@ -40,7 +39,6 @@ describe('seal', function() {
         call = keying.getCall(1);
         expect(call.args[0]).to.deep.equal({ identifier: 'https://self-issued.me' });
         expect(call.args[1]).to.deep.equal({
-          recipient: { identifier: 'https://self-issued.me' },
           usage: 'sign',
           algorithms: [ 'hmac-sha256' ]
         });
@@ -98,9 +96,6 @@ describe('seal', function() {
           id: 'https://api.example.com/'
         });
         expect(call.args[1]).to.deep.equal({
-          recipient: {
-            id: 'https://api.example.com/'
-          },
           usage: 'encrypt',
           algorithms: [ 'aes128-cbc' ]
         });
@@ -110,9 +105,6 @@ describe('seal', function() {
           id: 'https://api.example.com/'
         });
         expect(call.args[1]).to.deep.equal({
-          recipient: {
-            id: 'https://api.example.com/'
-          },
           usage: 'sign',
           algorithms: [ 'hmac-sha256' ]
         });
@@ -166,9 +158,6 @@ describe('seal', function() {
           id: 'https://api.example.net/'
         });
         expect(call.args[1]).to.deep.equal({
-          recipient: {
-            id: 'https://api.example.net/'
-          },
           usage: 'encrypt',
           algorithms: [ 'aes128-cbc' ]
         });
