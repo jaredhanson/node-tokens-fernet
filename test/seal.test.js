@@ -194,7 +194,35 @@ describe('seal', function() {
           expect(claims.foo).to.equal('bar');
         });
       });
-    }); // encrypting to audience implicitly single key for both encryption and message authentication
+    }); // encrypting to audience using single key for both encryption and message authentication
+    
+    describe('encrypting to multiple recipients', function() {
+      var error, token;
+      
+      before(function(done) {
+        var recipients = [ {
+          id: 'https://api.example.com/'
+        }, {
+          id: 'https://api.example.net/'
+        } ];
+        
+        var seal = setup(function(){});
+        seal({ foo: 'bar' }, recipients, function(err, t) {
+          error = err;
+          token = t;
+          done();
+        });
+      });
+      
+      it('should error', function() {
+        expect(error).to.be.an.instanceOf(Error);
+        expect(error.message).to.equal('Unable to seal fernet tokens to multiple recipients');
+      });
+      
+      it('should not generate a token', function() {
+        expect(token).to.be.undefined;
+      });
+    }); // encrypting to multiple recipients
     
   }); // defaults
   
