@@ -10,26 +10,26 @@ describe('seal', function() {
     var seal, keying;
 
     before(function() {
-      keying = sinon.spy(function(q, cb){
+      keying = sinon.spy(function(entity, q, cb){
         if (!q.recipient) {
           if (q.usage == 'encrypt') {
-            return cb(null, [ { secret: 'ef7890abcdef7890' } ]);
+            return cb(null, { secret: 'ef7890abcdef7890' });
           } else {
-            return cb(null, [ { secret: '12abcdef7890abcd' } ]);
+            return cb(null, { secret: '12abcdef7890abcd' });
           }
         }
 
         switch (q.recipient.id) {
         case 'https://api.example.com/':
           if (q.usage == 'encrypt') {
-            return cb(null, [ { secret: 'abcdef7890abcdef', usages: [ 'encrypt' ] } ]);
+            return cb(null, { secret: 'abcdef7890abcdef', usages: [ 'encrypt' ] });
           } else {
-            return cb(null, [ { secret: 'API-12abcdef7890', usages: [ 'sign' ] } ]);
+            return cb(null, { secret: 'API-12abcdef7890', usages: [ 'sign' ] });
           }
           break;
           
         case 'https://api.example.net/':
-          return cb(null, [ { secret: 'NET-12abcdef7890', usages: [ 'sign', 'encrypt' ] } ]);
+          return cb(null, { secret: 'NET-12abcdef7890', usages: [ 'sign', 'encrypt' ] });
         }
       });
       
@@ -53,14 +53,14 @@ describe('seal', function() {
       it('should query for key', function() {
         expect(keying.callCount).to.equal(2);
         var call = keying.getCall(0);
-        expect(call.args[0]).to.deep.equal({
+        expect(call.args[1]).to.deep.equal({
           recipient: undefined,
           usage: 'encrypt',
           algorithms: [ 'aes128-cbc' ]
         });
         
         call = keying.getCall(1);
-        expect(call.args[0]).to.deep.equal({
+        expect(call.args[1]).to.deep.equal({
           recipient: undefined,
           usage: 'sign',
           algorithms: [ 'hmac-sha256' ]
@@ -109,7 +109,7 @@ describe('seal', function() {
       it('should query for key', function() {
         expect(keying.callCount).to.equal(2);
         var call = keying.getCall(0);
-        expect(call.args[0]).to.deep.equal({
+        expect(call.args[1]).to.deep.equal({
           recipient: {
             id: 'https://api.example.com/'
           },
@@ -118,7 +118,7 @@ describe('seal', function() {
         });
         
         call = keying.getCall(1);
-        expect(call.args[0]).to.deep.equal({
+        expect(call.args[1]).to.deep.equal({
           recipient: {
             id: 'https://api.example.com/'
           },
@@ -169,7 +169,7 @@ describe('seal', function() {
       it('should query for key', function() {
         expect(keying.callCount).to.equal(1);
         var call = keying.getCall(0);
-        expect(call.args[0]).to.deep.equal({
+        expect(call.args[1]).to.deep.equal({
           recipient: {
             id: 'https://api.example.net/'
           },

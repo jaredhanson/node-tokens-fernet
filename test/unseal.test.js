@@ -13,11 +13,11 @@ describe('unseal', function() {
     
     describe('decrypting', function() {
       before(function() {
-        keying = sinon.spy(function(q, cb){
+        keying = sinon.spy(function(entity, q, cb){
           if (q.usage == 'decrypt') {
-            return cb(null, [ { secret: 'abcdef7890abcdef' } ]);
+            return cb(null, { secret: 'abcdef7890abcdef' });
           } else {
-            return cb(null, [ { secret: 'API-12abcdef7890' } ]);
+            return cb(null, { secret: 'API-12abcdef7890' });
           }
         });
       
@@ -41,28 +41,21 @@ describe('unseal', function() {
       it('should query for key', function() {
         expect(keying.callCount).to.equal(2);
         var call = keying.getCall(0);
-        expect(call.args[0]).to.deep.equal({
+        expect(call.args[1]).to.deep.equal({
           usage: 'decrypt',
           algorithms: [ 'aes128-cbc' ],
         });
         
         call = keying.getCall(1);
-        expect(call.args[0]).to.deep.equal({
+        expect(call.args[1]).to.deep.equal({
           usage: 'verify',
           algorithms: [ 'hmac-sha256' ],
         });
       });
       
       it('should unseal token', function() {
-        expect(tkn).to.be.an('object');
-        expect(Object.keys(tkn)).to.have.length(2);
-        
         expect(tkn).to.deep.equal({
-          headers: {
-          },
-          claims: {
             foo: 'bar'
-          }
         });
       });
     }); // decrypting
