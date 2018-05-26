@@ -39,29 +39,37 @@ describe('seal', function() {
     
     describe('encrypting to self', function() {
       var token;
+      
+      var keying = sinon.spy(function(entity, q, cb){
+        if (q.usage == 'encrypt') {
+          return cb(null, { secret: 'ef7890abcdef7890' });
+        } else {
+          return cb(null, { secret: '12abcdef7890abcd' });
+        }
+      });
+      
       before(function(done) {
-        seal({ foo: 'bar' }, null, function(err, t) {
+        var seal = setup(keying);
+        seal({ foo: 'bar' }, { identifier: 'https://self-issued.me' }, function(err, t) {
           token = t;
           done(err);
         });
       });
       
-      after(function() {
-        keying.reset();
-      });
-      
       it('should query for key', function() {
         expect(keying.callCount).to.equal(2);
         var call = keying.getCall(0);
+        expect(call.args[0]).to.deep.equal({ identifier: 'https://self-issued.me' });
         expect(call.args[1]).to.deep.equal({
-          recipient: undefined,
+          recipient: { identifier: 'https://self-issued.me' },
           usage: 'encrypt',
           algorithms: [ 'aes128-cbc' ]
         });
         
         call = keying.getCall(1);
+        expect(call.args[0]).to.deep.equal({ identifier: 'https://self-issued.me' });
         expect(call.args[1]).to.deep.equal({
-          recipient: undefined,
+          recipient: { identifier: 'https://self-issued.me' },
           usage: 'sign',
           algorithms: [ 'hmac-sha256' ]
         });
