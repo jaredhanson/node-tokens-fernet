@@ -94,6 +94,9 @@ describe('seal', function() {
       it('should query for key', function() {
         expect(keying.callCount).to.equal(2);
         var call = keying.getCall(0);
+        expect(call.args[0]).to.deep.equal({
+          id: 'https://api.example.com/'
+        });
         expect(call.args[1]).to.deep.equal({
           recipient: {
             id: 'https://api.example.com/'
@@ -103,6 +106,9 @@ describe('seal', function() {
         });
         
         call = keying.getCall(1);
+        expect(call.args[0]).to.deep.equal({
+          id: 'https://api.example.com/'
+        });
         expect(call.args[1]).to.deep.equal({
           recipient: {
             id: 'https://api.example.com/'
@@ -156,6 +162,9 @@ describe('seal', function() {
       it('should query for key', function() {
         expect(keying.callCount).to.equal(1);
         var call = keying.getCall(0);
+        expect(call.args[0]).to.deep.equal({
+          id: 'https://api.example.net/'
+        });
         expect(call.args[1]).to.deep.equal({
           recipient: {
             id: 'https://api.example.net/'
