@@ -8,15 +8,16 @@ var expect = require('chai').expect;
 
 describe('unseal', function() {
   
-  describe('using defaults', function() {
+  describe('defaults', function() {
     
     describe('decrypting', function() {
       var claims, conditions;
       
       var keying = sinon.spy(function(entity, q, cb){
-        if (q.usage == 'decrypt') {
+        switch (q.usage) {
+        case 'decrypt':
           return cb(null, { secret: 'abcdef7890abcdef' });
-        } else {
+        case 'verify':
           return cb(null, { secret: 'API-12abcdef7890' });
         }
       });
@@ -34,18 +35,19 @@ describe('unseal', function() {
       
       it('should query for key', function() {
         expect(keying.callCount).to.equal(2);
+        
         var call = keying.getCall(0);
         expect(call.args[0]).to.be.undefined;
         expect(call.args[1]).to.deep.equal({
           usage: 'decrypt',
-          algorithms: [ 'aes128-cbc' ],
+          algorithms: [ 'aes-128-cbc' ],
         });
         
         call = keying.getCall(1);
         expect(call.args[0]).to.be.undefined;
         expect(call.args[1]).to.deep.equal({
           usage: 'verify',
-          algorithms: [ 'hmac-sha256' ],
+          algorithms: [ 'sha256' ],
         });
       });
       
@@ -61,13 +63,18 @@ describe('unseal', function() {
       });
     }); // decrypting
     
-    describe('decrypting with issuer', function() {
+  }); // defaults
+  
+  describe('issuer', function() {
+    
+    describe('decrypting', function() {
       var claims, conditions;
       
       var keying = sinon.spy(function(entity, q, cb){
-        if (q.usage == 'decrypt') {
+        switch (q.usage) {
+        case 'decrypt':
           return cb(null, { secret: 'abcdef7890abcdef' });
-        } else {
+        case 'verify':
           return cb(null, { secret: 'API-12abcdef7890' });
         }
       });
@@ -75,8 +82,8 @@ describe('unseal', function() {
       before(function(done) {
         var token = 'gAAAAABZQZ8EjPXNpNuS1P2retbZFG9yvR068ZRVdw2ba0JXJdrRxaqkuqKU5kgchw2So0T8HMBSowFnrjnyP4XFTOfHp-6ttg==';
         
-        var unseal = setup(keying);
-        unseal(token, { issuer: { identifier: 'https://server.example.com' } }, function(err, c, co) {
+        var unseal = setup('https://id.example.com', keying);
+        unseal(token, function(err, c, co) {
           claims = c;
           conditions = co;
           done(err);
@@ -86,17 +93,18 @@ describe('unseal', function() {
       it('should query for key', function() {
         expect(keying.callCount).to.equal(2);
         var call = keying.getCall(0);
-        expect(call.args[0]).to.deep.equal({ identifier: 'https://server.example.com' });
+        
+        expect(call.args[0]).to.deep.equal('https://id.example.com');
         expect(call.args[1]).to.deep.equal({
           usage: 'decrypt',
-          algorithms: [ 'aes128-cbc' ],
+          algorithms: [ 'aes-128-cbc' ],
         });
         
         call = keying.getCall(1);
-        expect(call.args[0]).to.deep.equal({ identifier: 'https://server.example.com' });
+        expect(call.args[0]).to.deep.equal('https://id.example.com');
         expect(call.args[1]).to.deep.equal({
           usage: 'verify',
-          algorithms: [ 'hmac-sha256' ],
+          algorithms: [ 'sha256' ],
         });
       });
       
@@ -112,6 +120,6 @@ describe('unseal', function() {
       });
     }); // decrypting with issuer
     
-  }); // using defaults
+  }); // issuer
   
 }); // unseal
