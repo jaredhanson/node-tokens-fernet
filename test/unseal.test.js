@@ -94,14 +94,14 @@ describe('unseal', function() {
         expect(keying.callCount).to.equal(2);
         var call = keying.getCall(0);
         
-        expect(call.args[0]).to.deep.equal('https://id.example.com');
+        expect(call.args[0]).to.equal('https://id.example.com');
         expect(call.args[1]).to.deep.equal({
           usage: 'decrypt',
           algorithms: [ 'aes-128-cbc' ],
         });
         
         call = keying.getCall(1);
-        expect(call.args[0]).to.deep.equal('https://id.example.com');
+        expect(call.args[0]).to.equal('https://id.example.com');
         expect(call.args[1]).to.deep.equal({
           usage: 'verify',
           algorithms: [ 'sha256' ],

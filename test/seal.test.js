@@ -103,7 +103,7 @@ describe('seal', function() {
         });
         
         call = keying.getCall(1);
-        expect(call.args[0]).to.deep.equal('https://api.example.com/');
+        expect(call.args[0]).to.equal('https://api.example.com/');
         expect(call.args[1]).to.deep.equal({
           usage: 'sign',
           algorithms: [ 'sha256' ]
