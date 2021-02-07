@@ -74,6 +74,72 @@ describe('seal', function() {
       });
     }); // encrypting to self
     
+    describe('encrypting to self with 32-bit key', function() {
+      var token;
+      
+      /*
+      var keying = sinon.spy(function(entity, q, cb){
+        switch (q.usage) {
+        case 'encrypt':
+          return cb(null, { secret: 'ef7890abcdef7890' });
+        case 'sign':
+          return cb(null, { secret: '12abcdef7890abcd' });
+        }
+      });
+      */
+      
+      before(function(done) {
+        var seal = setup();
+        seal({ beep: 'boop' }, { secret: '12abcdef7890abcdef7890abcdef7890' }, function(err, t) {
+          token = t;
+          done(err);
+        });
+      });
+      
+      /*
+      it('should query for key', function() {
+        expect(keying.callCount).to.equal(2);
+        
+        var call = keying.getCall(0);
+        expect(call.args[0]).to.be.undefined;
+        expect(call.args[1]).to.deep.equal({
+          usage: 'encrypt',
+          algorithms: [ 'aes-128-cbc' ]
+        });
+        
+        call = keying.getCall(1);
+        expect(call.args[0]).to.be.undefined;
+        expect(call.args[1]).to.deep.equal({
+          usage: 'sign',
+          algorithms: [ 'sha256' ]
+        });
+      });
+      */
+      
+      it('should generate a token', function() {
+        expect(token).to.be.a('string');
+        expect(token.length).to.equal(100);
+        expect(token.substr(0, 1)).to.equal('g');
+      });
+      
+      describe('verifying token', function() {
+        var claims;
+        before(function() {
+          var s = new fernet.Secret(Buffer.from('12abcdef7890abcdef7890abcdef7890', 'utf8').toString('base64'));
+          var t = new fernet.Token({ token: token, secret: s, ttl: 0 });
+          var payload = t.decode();
+          
+          claims = JSON.parse(payload);
+        });
+        
+        it('should be valid', function() {
+          expect(claims).to.deep.equal({
+            beep: 'boop'
+          });
+        });
+      });
+    }); // encrypting to self
+    
     describe('encrypting to recipient', function() {
       var token;
       
