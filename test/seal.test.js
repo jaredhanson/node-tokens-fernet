@@ -77,6 +77,7 @@ describe('seal', function() {
     describe('encrypting to recipient', function() {
       var token;
       
+      /*
       var keying = sinon.spy(function(entity, q, cb){
         switch (q.usage) {
         case 'encrypt':
@@ -85,17 +86,19 @@ describe('seal', function() {
           return cb(null, { secret: 'API-12abcdef7890', usages: [ 'sign' ] });
         }
       });
+      */
       
       before(function(done) {
         var recipients = [ 'https://api.example.com/' ];
         
-        var seal = setup(keying);
-        seal({ beep: 'boop' }, { recipients: recipients }, function(err, t) {
+        var seal = setup();
+        seal({ beep: 'boop' }, [ { secret: 'abcdef7890abcdef' }, { secret: 'API-12abcdef7890' } ], /*{ recipients: recipients },*/ function(err, t) {
           token = t;
           done(err);
         });
       });
       
+      /*
       it('should query for key', function() {
         expect(keying.callCount).to.equal(2);
         
@@ -113,6 +116,7 @@ describe('seal', function() {
           algorithms: [ 'sha256' ]
         });
       });
+      */
       
       it('should generate a token', function() {
         expect(token).to.be.a('string');
@@ -141,20 +145,23 @@ describe('seal', function() {
     describe('encrypting to recipient using single secret for both encryption and signing', function() {
       var token;
       
+      /*
       var keying = sinon.spy(function(entity, q, cb){
         return cb(null, { secret: 'NET-12abcdef7890', usages: [ 'sign', 'encrypt' ] });
       });
+      */
       
       before(function(done) {
         var audience = [ 'https://api.example.net/' ];
         
-        var seal = setup(keying);
-        seal({ beep: 'boop' }, { recipients: audience }, function(err, t) {
+        var seal = setup();
+        seal({ beep: 'boop' }, [ { secret: 'NET-12abcdef7890' }, { secret: 'NET-12abcdef7890' } ], /* { recipients: audience }, */ function(err, t) {
           token = t;
           done(err);
         });
       });
       
+      /*
       it('should query for key', function() {
         expect(keying.callCount).to.equal(1);
         
@@ -165,6 +172,7 @@ describe('seal', function() {
           algorithms: [ 'aes-128-cbc' ]
         });
       });
+      */
       
       it('should generate a token', function() {
         expect(token).to.be.a('string');
