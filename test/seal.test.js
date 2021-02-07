@@ -11,6 +11,7 @@ describe('seal', function() {
     describe('encrypting to self', function() {
       var token;
       
+      /*
       var keying = sinon.spy(function(entity, q, cb){
         switch (q.usage) {
         case 'encrypt':
@@ -19,15 +20,17 @@ describe('seal', function() {
           return cb(null, { secret: '12abcdef7890abcd' });
         }
       });
+      */
       
       before(function(done) {
-        var seal = setup(keying);
-        seal({ beep: 'boop' }, function(err, t) {
+        var seal = setup();
+        seal({ beep: 'boop' }, [ { secret: 'ef7890abcdef7890' }, { secret: '12abcdef7890abcd' } ], function(err, t) {
           token = t;
           done(err);
         });
       });
       
+      /*
       it('should query for key', function() {
         expect(keying.callCount).to.equal(2);
         
@@ -45,6 +48,7 @@ describe('seal', function() {
           algorithms: [ 'sha256' ]
         });
       });
+      */
       
       it('should generate a token', function() {
         expect(token).to.be.a('string');
@@ -86,7 +90,7 @@ describe('seal', function() {
         var recipients = [ 'https://api.example.com/' ];
         
         var seal = setup(keying);
-        seal({ beep: 'boop' }, recipients, function(err, t) {
+        seal({ beep: 'boop' }, { recipients: recipients }, function(err, t) {
           token = t;
           done(err);
         });
@@ -145,7 +149,7 @@ describe('seal', function() {
         var audience = [ 'https://api.example.net/' ];
         
         var seal = setup(keying);
-        seal({ beep: 'boop' }, audience, function(err, t) {
+        seal({ beep: 'boop' }, { recipients: audience }, function(err, t) {
           token = t;
           done(err);
         });
@@ -186,7 +190,7 @@ describe('seal', function() {
       });
     }); // encrypting to recipient using single secret for both encryption and signing
     
-    describe('encrypting to multiple recipients', function() {
+    describe.skip('encrypting to multiple recipients', function() {
       var error, token;
       
       before(function(done) {
